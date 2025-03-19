@@ -33,6 +33,8 @@
 #include "crtp.h"
 #include "platformservice.h"
 
+#include "sign_scheme.h"
+
 static SemaphoreHandle_t sendMutex;
 
 static xQueueHandle  rxQueue;
@@ -75,8 +77,12 @@ size_t appchannelReceiveDataPacket(void* buffer, size_t max_length, int timeout_
   int result = xQueueReceive(rxQueue, &packet, tickToWait);
 
   if (result == pdTRUE) {
-    int lenghtToCopy = (max_length < packet.size)?max_length:packet.size;
-    memcpy(buffer, packet.data, lenghtToCopy);
+    uint8_t msg_raw[max_length];
+    pki_t public_key = read_key(PUBLIC_KEY);
+    int raw_len = verify(msg_raw, packet.data, packet.size, public_key);
+
+    int lenghtToCopy = (max_length < raw_len) ? max_length : raw_len;
+    memcpy(buffer, msg_raw, lenghtToCopy);
     return lenghtToCopy;
   } else {
     return 0;
@@ -116,11 +122,15 @@ void appchannelIncomingPacket(CRTPPacket *p)
 static int sendDataPacket(void* data, size_t length, const bool doBlock)
 {
   static CRTPPacket packet;
+  static char signed_message[APPCHANNEL_MTU];
+
+  pki_t private_key = read_key(PRIVATE_KEY);
+  int signed_len = sign((uint8_t *)signed_message, data, length, private_key);
 
   xSemaphoreTake(sendMutex, portMAX_DELAY);
 
-  packet.size = (length > APPCHANNEL_MTU)?APPCHANNEL_MTU:length;
-  memcpy(packet.data, data, packet.size);
+  packet.size = (signed_len > APPCHANNEL_MTU) ? APPCHANNEL_MTU : signed_len;
+  memcpy(packet.data, signed_message, packet.size);
 
   // CRTP channel and ports are set in platformservice
   int result = 0;

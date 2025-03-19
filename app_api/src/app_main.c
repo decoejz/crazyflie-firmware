@@ -130,7 +130,7 @@ void appMain() {
 
   // App-channel
   {
-    char buffer[APPCHANNEL_MTU];
+    char buffer[CRTP_SIGNED_MAX_DATA_SIZE];
     appchannelSendPacket("hello", 5); // Deprecated (removed after August 2023)
     appchannelSendDataPacketBlock("hello", 5);
     appchannelSendDataPacket("hello", 5);

@@ -34,6 +34,8 @@
 
 #define CRTP_MAX_DATA_SIZE 30
 
+#define CRTP_SIGNED_MAX_DATA_SIZE 187 //(4 + CRTP_MAX_DATA_SIZE + 2048) 188 (1504)
+
 #define CRTP_HEADER(port, channel) (((port & 0x0F) << 4) | (channel & 0x0F))
 
 #define CRTP_IS_NULL_PACKET(P) ((P.header&0xF3)==0xF3)
@@ -53,7 +55,7 @@ typedef enum {
 
 typedef struct _CRTPPacket
 {
-  uint8_t size;                         //< Size of data
+  int size;                         //< Size of data
   union {
     struct {
       union {
@@ -70,9 +72,9 @@ typedef struct _CRTPPacket
 #endif
         };
       };
-      uint8_t data[CRTP_MAX_DATA_SIZE]; //< Data
+      uint8_t data[CRTP_SIGNED_MAX_DATA_SIZE]; //< Data
     };
-    uint8_t raw[CRTP_MAX_DATA_SIZE+1];  //< The full packet "raw"
+    uint8_t raw[CRTP_SIGNED_MAX_DATA_SIZE+1];  //< The full packet "raw"
   };
 } __attribute__((packed)) CRTPPacket;
 
