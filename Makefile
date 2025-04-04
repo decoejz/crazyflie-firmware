@@ -30,12 +30,14 @@ ARCH_CFLAGS += -fno-math-errno -DARM_MATH_CM4 -D__FPU_PRESENT=1 -mfp16-format=ie
 ARCH_CFLAGS += -Wno-array-bounds -Wno-stringop-overread
 ARCH_CFLAGS += -Wno-stringop-overflow
 ARCH_CFLAGS += -DSTM32F4XX -DSTM32F40_41xxx -DHSE_VALUE=8000000 -DUSE_STDPERIPH_DRIVER
+#ARCH_CFLAGS += -Wno-error=attributes
 
 FREERTOS = $(srctree)/vendor/FreeRTOS
 PORT = $(FREERTOS)/portable/GCC/ARM_CM4F
 LIB = $(srctree)/src/lib
 PROCESSOR = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
 LINKER_DIR = $(srctree)/tools/make/F405/linker
+SIGN_SCHEME_DIR := /home/souza/workspace/ita/andre/sign_scheme
 
 LDFLAGS += --specs=nosys.specs --specs=nano.specs $(PROCESSOR) -nostdlib
 image_LDFLAGS += -Wl,-Map=$(PROG).map,--cref,--gc-sections,--undefined=uxTopUsedPriority
@@ -55,12 +57,18 @@ INCLUDES += -I$(srctree)/src/modules/interface -I$(srctree)/src/modules/interfac
 INCLUDES += -I$(srctree)/src/modules/interface/cpx -I$(srctree)/src/modules/interface/p2pDTR -I$(srctree)/src/modules/interface/controller  -I$(srctree)/src/modules/interface/estimator
 INCLUDES += -I$(srctree)/src/utils/interface -I$(srctree)/src/utils/interface/kve -I$(srctree)/src/utils/interface/lighthouse -I$(srctree)/src/utils/interface/tdoa
 INCLUDES += -I$(LIB)/FatFS
+INCLUDES += -I$(LIB)/SignScheme -I$(LIB)/SignScheme/helper
 INCLUDES += -I$(LIB)/CMSIS/STM32F4xx/Include
 INCLUDES += -I$(LIB)/STM32_USB_Device_Library/Core/inc
 INCLUDES += -I$(LIB)/STM32_USB_OTG_Driver/inc
 INCLUDES += -I$(LIB)/STM32F4xx_StdPeriph_Driver/inc
 INCLUDES += -I$(LIB)/vl53l1 -I$(LIB)/vl53l1/core/inc
 INCLUDES += -I$(KBUILD_OUTPUT)/include/generated
+
+#INCLUDES += -I$(SIGN_SCHEME_DIR)/include -I$(SIGN_SCHEME_DIR)/install/include
+#INCLUDES += -I/usr/local/include
+INCLUDES += -I/usr/local/openssl-3.4.0/include -DOPENSSL_API_COMPAT=0x30400000L
+#LDFLAGS += /home/souza/workspace/ita/andre/sign_scheme/install/lib/libSignScheme.a
 
 # Here we tell Kbuild where to look for Kbuild files which will tell the
 # buildsystem which sources to build
@@ -79,6 +87,8 @@ MEM_SIZE_CCM_K = 64
 # Make sure Kbuild use our config that hinders some configs from being enabled
 # on allyesconfig or randconfig.
 #
+#export LDFLAGS
+#export LDLIBS
 export KCONFIG_ALLCONFIG ?= configs/all.config
 
 KBUILD_OUTPUT ?= build

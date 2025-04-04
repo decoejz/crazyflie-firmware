@@ -44,3 +44,23 @@ obj-y += vl53l1/core/src/vl53l1_error_strings.o
 obj-y += vl53l1/core/src/vl53l1_register_funcs.o
 obj-y += vl53l1/core/src/vl53l1_silicon_core.o
 obj-y += vl53l1/core/src/vl53l1_wait.o
+
+# SignScheme
+obj-y += SignScheme/sign_scheme.o
+obj-y += SignScheme/ecdsa/key_gen.o
+obj-y += SignScheme/ecdsa/read_key.o
+obj-y += SignScheme/ecdsa/sign.o
+obj-y += SignScheme/ecdsa/verify.o
+obj-y += SignScheme/eddsa/key_gen.o
+obj-y += SignScheme/eddsa/read_key.o
+obj-y += SignScheme/eddsa/sign.o
+obj-y += SignScheme/eddsa/verify.o
+obj-y += SignScheme/helper/io.o
+obj-y += SignScheme/no_sign/key_gen.o
+obj-y += SignScheme/no_sign/read_key.o
+obj-y += SignScheme/no_sign/sign.o
+obj-y += SignScheme/no_sign/verify.o
+obj-y += SignScheme/rsa/key_gen.o
+obj-y += SignScheme/rsa/read_key.o
+obj-y += SignScheme/rsa/sign.o
+obj-y += SignScheme/rsa/verify.o
