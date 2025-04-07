@@ -14,8 +14,9 @@ extern "C"
 #define MAX_SIGN_HEADER_SIZE (ECDSA_SIGN_HEADER_SIZE + NO_SIGN_SIGN_HEADER_SIZE + RSA_SIGN_HEADER_SIZE)
 #define MAX_SIGN_MAX_LEN (ECDSA_SIGN_MAX_LEN + NO_SIGN_SIGN_MAX_LEN + RSA_SIGN_MAX_LEN)
 
-int key_gen(const char *secret_name, const char *public_name);
-pki_t read_key(char load_type);
+void init_sign_scheme(char *app, char *scheme);
+int key_gen(char *secret_name, char *public_name);
+pki_t read_key(char load_type, char *key_name);
 int sign(uint8_t *msg_signed, uint8_t *msg_raw, unsigned int msg_len, pki_t secret_key);
 int verify(uint8_t *msg_raw, uint8_t *msg_signed, int total_len, pki_t public_key);
 

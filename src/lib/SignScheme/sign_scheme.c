@@ -8,20 +8,20 @@
 #include "ff.h"
 #include "diskio.h" 
 
-#include "ecdsa/ecdsa.h"
-#include "eddsa/eddsa.h"
+//#include "ecdsa/ecdsa.h"
+//#include "eddsa/eddsa.h"
 #include "no_sign/no_sign.h"
-#include "rsa/rsa.h"
+//#include "rsa/rsa.h"
 
 typedef unsigned char uchar;
 
-static char *sign_scheme;
+//static char *sign_scheme;
 
-static const char *private_key_name;
-static const char *public_key_name;
+//static const char *private_key_name;
+//static const char *public_key_name;
 
 static FIL *data_log;
-static char file_name[200];
+//  static char file_name[200];
 
 static int initialized = 0;
 
@@ -31,7 +31,7 @@ static uchar scheme_number = SIGN_SCHEME_NONE;
 static pki_t (*read_key_p)(char, const char *) = read_key_no_sign;
 static int (*sign_p)(uint8_t *, uint8_t *, unsigned int, pki_t) = sign_no_sign;
 static int (*verify_p)(uint8_t *, uint8_t *, int, pki_t) = verify_no_sign;
-static int (*key_gen_p)(const char *, const char *) = key_gen_no_sign;
+//static int (*key_gen_p)(const char *, const char *) = key_gen_no_sign;
 
 /* The CSV structure will be:
 
@@ -79,7 +79,7 @@ static int msg2int(int msg0, int msg1, int msg2)
     return (msg2 << 16) | (msg1 << 8) | msg0;
 }
 
-static void close_all(void)
+/*static void close_all(void)
 {
     f_close(data_log);
 }
@@ -88,7 +88,7 @@ static void cleanup_handler(int signum)
 {
     f_close(data_log);
     _exit(1);
-}
+}*/
 
 static void write_log(int id, uchar encoded, time_t time, uchar len, uchar seq, uchar sysid, uchar compid, int msgid)
 {
@@ -118,9 +118,8 @@ static uchar encode(uchar op, uchar step, uchar valid)
     return res;
 }
 
-static void init_schemes()
+/*static void init_schemes(const char *sign_scheme)
 {
-    sign_scheme = get("SIGN_SCHEME");
     if (sign_scheme != NULL)
     {
         if (strcmp(sign_scheme, "RSA") == 0)
@@ -148,9 +147,9 @@ static void init_schemes()
             key_gen_p = key_gen_eddsa;
         }
     }
-}
+}*/
 
-static void init_keys()
+/*static void init_keys()
 {
     private_key_name = get("SECRET_KEY_PATH");
     public_key_name = get("PUBLIC_KEY_PATH");
@@ -160,11 +159,10 @@ static void init_keys()
         log_info("Key path not defined\n");
         exit(EXIT_FAILURE);
     }
-}
+}*/
 
-static void init_app()
+/*static void init_app(char *app_name)
 {
-    char *app_name = get("APP_NAME");
     if (app_name != NULL)
     {
         if (strcmp(app_name, "QGC") == 0)
@@ -186,9 +184,9 @@ static void init_app()
         log_info("Invalid app name\n");
         exit(EXIT_FAILURE);
     }
-}
+}*/
 
-static void init_logs()
+/*static void init_logs()
 {
     const char *log_path = get("LOG_FILE_PATH");
     if (!log_path)
@@ -221,31 +219,31 @@ static void init_logs()
     sigaction(SIGABRT, &sa, NULL);
     sigaction(SIGFPE, &sa, NULL);
     sigaction(SIGILL, &sa, NULL);
-}
+}*/
 
-static void init_all()
+void init_sign_scheme(char *app, char *scheme)
 {
     if (!initialized)
     {
-        init_app();
-        init_schemes();
-        init_keys();
-        init_logs();
+        //init_app(app);
+        //init_schemes(scheme);
+        //init_keys();
+        //init_logs();
 
         initialized = 1;
     }
 }
 
-pki_t read_key(char load_type)
+pki_t read_key(char load_type, char *key_name)
 {
-    init_all();
-    return read_key_p(load_type, (load_type == PRIVATE_KEY) ? private_key_name : public_key_name);
+    //init_all();
+    return read_key_p(load_type, key_name);
 }
 
 int sign(uint8_t *msg_signed, uint8_t *msg_raw, unsigned int msg_len, pki_t secret_key)
 {
     int res;
-    init_all();
+    //init_all();
 
     uchar m_len = msg_raw[1];
     uchar m_seq = msg_raw[4];
@@ -271,7 +269,7 @@ int sign(uint8_t *msg_signed, uint8_t *msg_raw, unsigned int msg_len, pki_t secr
 int verify(uint8_t *msg_raw, uint8_t *msg_signed, int total_len, pki_t public_key)
 {
     int res;
-    init_all();
+    //init_all();
 
     int id = rand();
     time_t before_exec = time(NULL);
@@ -294,8 +292,8 @@ int verify(uint8_t *msg_raw, uint8_t *msg_signed, int total_len, pki_t public_ke
     return res;
 }
 
-int key_gen(const char *secret_name, const char *public_name)
+/*int key_gen(const char *scheme, const char *secret_name, const char *public_name)
 {
-    init_schemes();
+    init_schemes(scheme);
     return key_gen_p(secret_name, public_name);
-}
+}*/
