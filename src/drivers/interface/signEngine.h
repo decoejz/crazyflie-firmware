@@ -24,5 +24,6 @@ typedef struct {
 void signEngineInit(const char* cfg_file_name);
 char* getCfg(char* key);
 bool signEngineTest(const char* filename, const char* content);
+bool signEngineIsReady(void);
 
 #endif //__SIGNENGINE_H__

@@ -183,3 +183,7 @@ bool signEngineTest(const char* filename, const char* content) {
         return false;
     }
 }
+
+bool signEngineIsReady(void) {
+    return signReady;
+}

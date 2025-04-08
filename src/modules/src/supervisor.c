@@ -45,7 +45,7 @@
 
 #define DEBUG_MODULE "SUP"
 #include "debug.h"
-
+#include "signEngine.h"
 
 #define DEFAULT_EMERGENCY_STOP_WATCHDOG_TIMEOUT (M2T(1000))
 
@@ -258,6 +258,8 @@ static void postTransitionActions(SupervisorMem_t* this, const supervisorState_t
 
   if (newState == supervisorStateReadyToFly) {
     DEBUG_PRINT("Ready to fly\n");
+    signEngineInit("sign_scheme.cfg");
+    DEBUG_PRINT("Sign Scheme Inited!\n");
   }
 
   if (newState == supervisorStateLanded) {

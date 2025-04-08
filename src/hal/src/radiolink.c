@@ -45,6 +45,8 @@
 #include "static_mem.h"
 #include "cfassert.h"
 
+#include "signEngine.h"
+
 #define RADIOLINK_TX_QUEUE_SIZE (1)
 #define RADIOLINK_CRTP_QUEUE_SIZE (5)
 #define RADIO_ACTIVITY_TIMEOUT_MS (1000)
@@ -206,10 +208,15 @@ void radiolinkSyslinkDispatch(SyslinkPacket *slp)
   isConnected = radiolinkIsConnected();
 }
 
+static bool receiveCtl = false;
 static int radiolinkReceiveCRTPPacket(CRTPPacket *p)
 {
   if (xQueueReceive(crtpPacketDelivery, p, M2T(100)) == pdTRUE)
   {
+    if(signEngineIsReady() && !receiveCtl) {
+      signEngineTest("receive.txt","radiolinkReceiveCRTPPacket");
+      receiveCtl = true;
+    }
     return 0;
   }
 
@@ -221,6 +228,7 @@ void p2pRegisterCB(P2PCallback cb)
     p2p_callback = cb;
 }
 
+static bool sendCtl = false;
 static int radiolinkSendCRTPPacket(CRTPPacket *p)
 {
   static SyslinkPacket slp;
@@ -233,6 +241,11 @@ static int radiolinkSendCRTPPacket(CRTPPacket *p)
 
   if (xQueueSend(txQueue, &slp, M2T(100)) == pdTRUE)
   {
+    if(signEngineIsReady() && !sendCtl) {
+      signEngineTest("send.txt","radiolinkSendCRTPPacket");
+      sendCtl = true;
+    }
+
     return true;
   }
 

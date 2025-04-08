@@ -11,6 +11,11 @@ branch off from the 2017.06 tag.
 ## Building and Flashing
 See the [building and flashing instructions](https://github.com/bitcraze/crazyflie-firmware/blob/master/docs/building-and-flashing/build.md) in the github docs folder.
 
+cd crazyflie-firmware
+git submodule init
+git submodule update
+make cf2_defconfig
+make -j$(nproc)
 
 ## Official Documentation
 
